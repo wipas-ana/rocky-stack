@@ -11,7 +11,7 @@ const commanderPackagePath = join(
 );
 const installKeyPath = join(
   nodeModulesDirectory,
-  ".loki-mode-tools-install-key"
+  ".rocky-mode-tools-install-key"
 );
 
 function currentInstallKey(): string {
