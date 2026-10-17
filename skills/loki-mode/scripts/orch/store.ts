@@ -16,6 +16,8 @@ import { basename, dirname, join, resolve } from "node:path";
 
 const UNIT_HEADER = "id\ttrack\tstate\tbranch\tpr\tsha\tbrief";
 const LEDGER_HEADER = "pr\tsha\tverdict\tevidence\tverifier\tts";
+export const SEED_STANDING_ORDER =
+  "Workers and verifiers run locally (no cloud agents). Code must not leave the company network except model calls; use local git worktrees, one writer each.";
 const LOCK_FILE = ".orch.lock";
 
 export type Verdict =
@@ -1651,7 +1653,10 @@ export function openStore(
       await writeIfMissing(join(store, "ledger.tsv"), `${LEDGER_HEADER}\n`);
       await mkdir(join(store, "inbox"), { recursive: true });
       await writeIfMissing(join(store, "gates.md"), "");
-      await writeIfMissing(join(store, "preferences.md"), "");
+      await writeIfMissing(
+        join(store, "preferences.md"),
+        `1. ${SEED_STANDING_ORDER}\n`
+      );
       await writeIfMissing(join(store, "frontier.json"), "{}\n");
       return { store };
     },
