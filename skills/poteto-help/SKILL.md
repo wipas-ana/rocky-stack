@@ -1,16 +1,16 @@
 ---
 name: poteto-help
-description: Guides users through pstack setup, /rocky-mode, and picking the skill, playbook, or principle for a task. Type /poteto-help with a question.
+description: Guides users through rock-stack setup, /rocky-mode, and picking the skill, playbook, or principle for a task. Type /poteto-help with a question.
 disable-model-invocation: true
 ---
 
 # Poteto help
 
-Answer the user's question about pstack, hand them a prompt they can send, and link the file the answer came from. For a help question, don't start the work. The user asked how, and a pstack run spends real tokens, so let them send the prompt.
+Answer the user's question about rock-stack, hand them a prompt they can send, and link the file the answer came from. For a help question, don't start the work. The user asked how, and a rock-stack run spends real tokens, so let them send the prompt.
 
-A message that asks for work, such as "use pstack to fix this bug", is not a help question. Read [`rocky-mode`](../rocky-mode/SKILL.md), do the work under it, and mention once that a Custom Mode keeps it on.
+A message that asks for work, such as "use rock-stack to fix this bug", is not a help question. Read [`rocky-mode`](../rocky-mode/SKILL.md), do the work under it, and mention once that a Custom Mode keeps it on.
 
-This file maps questions to the skills and guide pages that hold the answers. Those files own the details. Read the file you route to before you quote it, and trust it when it disagrees with this map. The links here point into the installed plugin, which the user may not be able to open, so give the user the file's public copy: `https://github.com/cursor/plugins/blob/main/pstack/` followed by its path.
+This file maps questions to the skills and guide pages that hold the answers. Those files own the details. Read the file you route to before you quote it, and trust it when it disagrees with this map. The links here point into the installed plugin, which the user may not be able to open, so give the user the file's public copy: `https://github.com/cursor/plugins/blob/main/rock-stack/` followed by its path.
 
 ## Find out what they need
 
@@ -20,29 +20,29 @@ Infer the need from the message and the conversation. A named situation, such as
 - Start a task with `/rocky-mode`
 - Pick a skill for a situation
 - Fix a run that went wrong
-- Make pstack my own
+- Make rock-stack my own
 
 Check the state that changes the answer, and mention it only when it does:
 
-- No `~/.cursor/rules/pstack-models.mdc` means `/setup-pstack` hasn't run for this user, so every role uses its default model.
+- No `~/.cursor/rules/rock-stack-models.mdc`, and no legacy `pstack-models.mdc`, means `/setup-rock-stack` hasn't run for this user, so every role uses its default model.
 - No `verify-*` skill or other app harness in the project means agents have no scripted way to drive the app. Mention `/create-verification-skill` when the question is about proving a change works.
 
 When the model rule is missing and it matters, ask whether the user wants to pick a model for each role and a reasoning budget now. It matters when the user is new, the question is about setup or cost, or the answer depends on which models run. Ask at most once per chat. If the need is also unclear, ask both questions together. Offer two choices:
 
-- Now: give them `/setup-pstack` to type, and answer their question too.
-- Later: answer their question, and add one line saying every role keeps its default model until they run `/setup-pstack`.
+- Now: give them `/setup-rock-stack` to type, and answer their question too.
+- Later: answer their question, and add one line saying every role keeps its default model until they run `/setup-rock-stack`.
 
 ## Get set up
 
-1. Install with `/add-plugin pstack` in chat, or from Customize in the sidebar.
-2. Run [`/setup-pstack`](../setup-pstack/SKILL.md). It asks for a reasoning budget, maps a model to each role, and writes a rule. The rule applies to new chats.
+1. Install by copying the repository to `~/.cursor/plugins/local/rock-stack` and reloading Cursor. rock-stack isn't in the marketplace. [Guide page 1](../../docs/guide/01-setup.md) has the details.
+2. Run [`/setup-rock-stack`](../setup-rock-stack/SKILL.md). It asks for a reasoning budget, maps a model to each role, and writes a rule. The rule applies to new chats.
 3. Start a real task with `/rocky-mode`, a goal, and a check that can pass or fail.
 
-Installing changes nothing until the user invokes a skill. Only `/setup-pstack` loads from the user's words. The [README](../../README.md) and [guide page 1](../../docs/guide/01-setup.md) have the details. Offer to word their first prompt with them, per [`references/prompting.md`](references/prompting.md).
+Installing changes nothing until the user invokes a skill. Only `/setup-rock-stack` loads from the user's words. The [README](../../README.md) and [guide page 1](../../docs/guide/01-setup.md) have the details. Offer to word their first prompt with them, per [`references/prompting.md`](references/prompting.md).
 
-If cost is the worry, say where the tokens go and how to spend fewer. pstack spends extra tokens on subagents and review panels. Rerun `/setup-pstack` and pick a smaller budget or cheaper models. A role set to `auto` or `inherit-parent` runs on the chat's model, which saves tokens when the chat runs on Auto or a cheaper model. A shorter panel list runs fewer subagents, one for each entry. Save `/rocky-mode` for work that needs rigor.
+If cost is the worry, say where the tokens go and how to spend fewer. rock-stack spends extra tokens on subagents and review panels. Rerun `/setup-rock-stack` and pick a smaller budget or cheaper models. A role set to `auto` or `inherit-parent` runs on the chat's model, which saves tokens when the chat runs on Auto or a cheaper model. A shorter panel list runs fewer subagents, one for each entry. Save `/rocky-mode` for work that needs rigor.
 
-pstack is built for Cursor. Its skills use the Agent Skills format, so other tools can read them. But most workflow skills, including `/rocky-mode`, `/how`, `/why`, and `/teach`, spawn Cursor subagents with per-role models, and Custom Modes and `/loop` are Cursor features, so those parts may not work there.
+rock-stack is built for Cursor. Its skills use the Agent Skills format, so other tools can read them. But most workflow skills, including `/rocky-mode`, `/how`, `/why`, and `/teach`, spawn Cursor subagents with per-role models, and Custom Modes and `/loop` are Cursor features, so those parts may not work there.
 
 ## Start a task with `/rocky-mode`
 
@@ -87,12 +87,12 @@ The default answer is `/rocky-mode`, which runs most of the others when its step
 | Vet a performance number before reporting or acting on it | [`/benchmark-checklist`](../benchmark-checklist/SKILL.md) |
 | Run a large or cross-cutting change, or one to review after stepping away | [`/figure-it-out`](../figure-it-out/SKILL.md) |
 | Keep a decision log during a run, and review it afterward | [`/show-me-your-work`](../show-me-your-work/SKILL.md) |
-| Pick a model for each role and a reasoning budget | [`/setup-pstack`](../setup-pstack/SKILL.md) |
+| Pick a model for each role and a reasoning budget | [`/setup-rock-stack`](../setup-rock-stack/SKILL.md) |
 | Turn their own working habits into a personal mode skill | [`/automate-me`](../automate-me/SKILL.md) |
 | Turn what a finished task taught into skill edits | [`/reflect`](../reflect/SKILL.md) |
 | Stop agents from repeating the same mistakes in this repo | [`/correct`](../correct/SKILL.md) |
 | Build a page whose buttons wake a Grok Bot over a webhook | [`/make-bot-ui`](../make-bot-ui/SKILL.md) |
-| Find their way around pstack | `/poteto-help` |
+| Find their way around rock-stack | `/poteto-help` |
 
 If a skill directory next to this one is missing from the table, read its frontmatter and route by its description. The `principle-*` directories are covered under principles below.
 
@@ -105,11 +105,11 @@ Close calls:
 - `/recall` rebuilds context across recent chats. `/ketchup` covers only this chat since the user's last message. Resuming one specific chat or branch is the Session pickup playbook.
 - `/figure-it-out` designs one rigorous run. The Orchestrate playbook runs a program that spans days and many PRs. The Autonomous run playbook drives one task to a finish condition.
 
-Not in pstack:
+Not in rock-stack:
 
 - `/deslop`, `control-cli`, and `control-ui` ship in the `cursor-team-kit` plugin.
 - `/loop` and `/create-skill` are Cursor built-ins.
-- pstack has no `/orchestrate` skill. Orchestrate is a `/rocky-mode` playbook. If the slash menu shows `/orchestrate`, another plugin provides it.
+- rock-stack has no `/orchestrate` skill. Orchestrate is a `/rocky-mode` playbook. If the slash menu shows `/orchestrate`, another plugin provides it.
 
 ## Playbooks and principles
 
@@ -126,7 +126,7 @@ Playbooks are step lists inside `/rocky-mode`, not skills, so they have no slash
 
 Without `/rocky-mode`, a phrase such as "babysit this pr" can start Cursor's own skill for the same job instead. The Playbooks section of [`rocky-mode`](../rocky-mode/SKILL.md) lists every playbook and when it applies. [Guide page 6](../../docs/guide/06-verify-and-ship.md) covers opening, babysitting, and landing a PR.
 
-pstack has no planning skill. Cursor's Plan Mode works alongside it. For work that spans phases or stacked PRs, asking `/rocky-mode` for a plan runs the [Multi-phase plan playbook](../rocky-mode/playbooks/multi-phase-plan.md), which writes the plan and doesn't implement it. For a design question, the Prototype playbook or `/architect` settles it in code first.
+rock-stack has no planning skill. Cursor's Plan Mode works alongside it. For work that spans phases or stacked PRs, asking `/rocky-mode` for a plan runs the [Multi-phase plan playbook](../rocky-mode/playbooks/multi-phase-plan.md), which writes the plan and doesn't implement it. For a design question, the Prototype playbook or `/architect` settles it in code first.
 
 Principles are one-rule skills that `/rocky-mode` reads and cites in its replies. The user rarely invokes one. They steer with the names instead, as in "apply prove it works. show me the real output." Typing `/principle-<name>` still loads one on demand. [Guide page 8](../../docs/guide/08-principles.md) lists them.
 
@@ -136,16 +136,16 @@ Principles are one-rule skills that `/rocky-mode` reads and cites in its replies
 |---|---|
 | The mode stopped applying after a few turns | It was started with Enter. Start it as a Custom Mode, or start each task with `/rocky-mode`. |
 | A question got treated as the next step of the last task | Say "new task", or say the turn doesn't need the mode. |
-| A new model choice had no effect | The rule from `/setup-pstack` applies to new chats. Start one. |
+| A new model choice had no effect | The rule from `/setup-rock-stack` applies to new chats. Start one. |
 | Runs cost more than expected | See the cost paragraph under Get set up. |
-| A skill didn't load on its own | Only `/setup-pstack` loads from the user's words. The others load when the user types them or when `/rocky-mode` runs them, and it doesn't run every skill. |
+| A skill didn't load on its own | Only `/setup-rock-stack` loads from the user's words. The others load when the user types them or when `/rocky-mode` runs them, and it doesn't run every skill. |
 | Parallel agents overwrote each other | Give each agent its own worktree, or run them as cloud agents, which each get their own machine. |
 | An overnight run moved but finished nothing | `/loop` needs a check that can pass or fail, not a duration. See [guide page 7](../../docs/guide/07-overnight.md). |
 | The reply claims success from a green build | Ask for the real command, flow, stored value, or profile. That's the prove-it-works principle. |
 
 For a run that drifts, [`references/prompting.md`](references/prompting.md) has one-line steers. [Guide page 10](../../docs/guide/10-recipes-and-pitfalls.md) has more pitfalls and the recipes worth copying.
 
-## Make pstack my own
+## Make rock-stack my own
 
 - [`/automate-me`](../automate-me/SKILL.md) drafts a personal mode skill from the user's own history, to use alongside `/rocky-mode`.
 - [`/reflect`](../reflect/SKILL.md) after a session turns its lessons into skill edits the user approves.

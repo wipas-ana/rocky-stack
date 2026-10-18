@@ -1,6 +1,6 @@
-# pstack in Claude Code
+# rock-stack in Claude Code
 
-pstack skills use Cursor names. In Claude Code, read this file once per session, then map each Cursor name in a skill with the tables below. `<pstack>` means the folder that holds `skills/` and `docs/`. If a Cursor field has no row, drop it and say so. Never pass a field or value the tool schema rejects.
+rock-stack skills use Cursor names. In Claude Code, read this file once per session, then map each Cursor name in a skill with the tables below. `<rock-stack>` means the folder that holds `skills/` and `docs/`. If a Cursor field has no row, drop it and say so. Never pass a field or value the tool schema rejects.
 
 ## Tools
 
@@ -9,7 +9,7 @@ pstack skills use Cursor names. In Claude Code, read this file once per session,
 | `Task` | `Agent` |
 | `AskQuestion` | `AskUserQuestion`. In `-p` mode it is absent, so ask in plain text. |
 | Open a todolist | Use `TodoWrite` if the session offers it. Otherwise keep the list in your reply and update it at each phase. |
-| Run another pstack skill (`/name` or "the **name** skill") | `Read` `<pstack>/skills/<name>/SKILL.md` and follow it. The `Skill` tool refuses most pstack skills. When you tell the user to type it, write `/pstack:<name>`. |
+| Run another rock-stack skill (`/name` or "the **name** skill") | `Read` `<rock-stack>/skills/<name>/SKILL.md` and follow it. The `Skill` tool refuses most rock-stack skills. When you tell the user to type it, write `/rock-stack:<name>`. |
 | `Grep`, `Glob` | `Bash` with `rg` when the session has no `Grep` or `Glob`. |
 
 ## Subagent fields
@@ -17,7 +17,7 @@ pstack skills use Cursor names. In Claude Code, read this file once per session,
 | Cursor | Claude Code |
 | --- | --- |
 | `subagent_type: generalPurpose` | `subagent_type: "general-purpose"` |
-| `poteto-agent`, `comment-sicko` | `pstack:poteto-agent`, `pstack:comment-sicko` |
+| `poteto-agent`, `comment-sicko` | `rock-stack:poteto-agent`, `rock-stack:comment-sicko` |
 | `readonly: true` | `subagent_type: "Explore"`. It keeps `Bash`, so the brief also says "do not edit files", and you check `git status` afterward. |
 | `readonly: false` | `general-purpose`. It keeps the session's MCP servers. |
 | `environment: "cloud"` | `isolation: "worktree"`. Name the branch or commit the worker checks out. |
@@ -34,7 +34,7 @@ pstack skills use Cursor names. In Claude Code, read this file once per session,
 | `claude-<family>-<version>-<effort>[-fast]`, such as `claude-opus-5-5-xhigh` | `model: "opus"` and `effort: "xhigh"`. `model` takes only `opus`, `sonnet`, `haiku`, `fable`. Drop `-fast`. |
 | A `grok-*`, `gpt-*`, or other non-Claude slug | Omit `model` so the agent runs on the session model, and say so. |
 | `auto` or `inherit-parent` | Omit `model`. |
-| The `pstack-models.mdc` rule | Claude Code does not load it. Use the skill's default slug and map it with these rows. `setup-pstack` has nothing to write, so say so and stop. Never put its role lines in `CLAUDE.md` or `AGENTS.md`. |
+| The `rock-stack-models.mdc` rule, or the legacy `pstack-models.mdc` | Claude Code does not load it. Use the skill's default slug and map it with these rows. `setup-rock-stack` has nothing to write, so say so and stop. Never put its role lines in `CLAUDE.md` or `AGENTS.md`. |
 
 ## Paths
 

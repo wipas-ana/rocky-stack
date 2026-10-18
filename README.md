@@ -1,33 +1,30 @@
-# pstack
+# rock-stack
+
+rock-stack is a fork of [pstack](https://github.com/cursor/plugins/tree/main/pstack) by Lauren Tan ([@poteto](https://x.com/poteto)), forked at upstream commit `101b274` and maintained by Wipas Anantamongkol (Frong). the intro below is poteto's.
 
 i'm [poteto](https://x.com/poteto). i'm not a president or ceo, but i've worked with millions of lines of code at Meta, Netflix, and Cursor. i'm also on the react core team where i help build and maintain react compiler.
 
 there's a growing sense that ai writes too much slop code. i agree. i don't want to ship like a team of twenty slop artists. throughput without quality is not a goal i aspire to. if you want to go fast, go deep first. 
 
-**pstack is my answer.** these are the same skills i use everyday to ship high quality code at Cursor. this turns cursor into a real engineering team. the goal is not to maximize loc, in fact it's the opposite. pstack helps you write less, but higher quality code.
+**rock-stack is my answer.** these are the same skills i use everyday to ship high quality code at Cursor. this turns cursor into a real engineering team. the goal is not to maximize loc, in fact it's the opposite. rock-stack helps you write less, but higher quality code.
 
-**pstack gives you fearless parallelism.** when you can go deep on one agent and trust it to write good, verifiable code, you can truly parallelize with confidence. start multiple agents up with `rocky-mode` and trust that they'll apply rigorous engineering principles to their work.
+**rock-stack gives you fearless parallelism.** when you can go deep on one agent and trust it to write good, verifiable code, you can truly parallelize with confidence. start multiple agents up with `rocky-mode` and trust that they'll apply rigorous engineering principles to their work.
 
-**cursor gives you the best of all worlds.** every frontier model has its strengths and weaknesses. use any model with pstack. in fact, many of my skills use multi-model workflows to take advantage of each model's unique strengths.
+**cursor gives you the best of all worlds.** every frontier model has its strengths and weaknesses. use any model with rock-stack. in fact, many of my skills use multi-model workflows to take advantage of each model's unique strengths.
 
 fork it. improve it. make it yours. PRs are welcome! 
 
 ## install
 
-```bash
-/add-plugin pstack
-```
-
-in claude code:
+rock-stack isn't in the cursor marketplace. copy this repository into cursor's local plugin folder, then restart cursor or run Developer: Reload Window:
 
 ```bash
-/plugin marketplace add cursor/plugins
-/plugin install pstack@cursor-plugins
+cp -R . ~/.cursor/plugins/local/rock-stack
 ```
 
-claude code prefixes plugin commands and agents, so `/rocky-mode` is `/pstack:rocky-mode`. the [claude code adapter](./docs/harness/claude-code.md) maps every other cursor name.
+copy it rather than symlink it, because cursor skips a symlink that points outside that folder. on teams and enterprise, an admin must turn on Allow Local Plugin Imports. uninstall the upstream pstack plugin first so its skills don't load twice.
 
-claude code installs a generated copy of pstack from [`harness/pstack/`](https://github.com/cursor/plugins/tree/main/harness/pstack) at the repository root. after changing `skills/`, `agents/`, `docs/harness/claude-code.md`, or `plugin.json`, run `node scripts/generate-pstack-harness-trees.mjs` from the repository root and commit the result. ci fails until you do.
+in claude code, plugin commands and agents get the plugin's name as a prefix, so `/rocky-mode` is `/rock-stack:rocky-mode`. the [claude code adapter](./docs/harness/claude-code.md) maps every other cursor name. rock-stack has no generated claude code build. upstream pstack ships one from [`harness/pstack/`](https://github.com/cursor/plugins/tree/main/harness/pstack) in its repository.
 
 to run every script test, run `bun run test` in `skills/rocky-mode/scripts`, or `bun test skills` from the repository root. both cover the handbook checker.
 
@@ -35,12 +32,12 @@ to run every script test, run `bun run test` in `skills/rocky-mode/scripts`, or 
 
 two steps:
 
-1. run [`/setup-pstack`](./skills/setup-pstack/SKILL.md), pick a reasoning budget, and choose which models you want.
+1. run [`/setup-rock-stack`](./skills/setup-rock-stack/SKILL.md), pick a reasoning budget, and choose which models you want.
 2. use [`/rocky-mode`](./skills/rocky-mode/SKILL.md) whenever you're doing anything that requires rigor.
 
-new here? the [pstack guide](./docs/guide/README.md) walks you through a first real task, from setup and prompting through verification and overnight runs. stuck, or unsure which skill fits? ask [`/poteto-help`](./skills/poteto-help/SKILL.md).
+new here? the [rock-stack guide](./docs/guide/README.md) walks you through a first real task, from setup and prompting through verification and overnight runs. stuck, or unsure which skill fits? ask [`/poteto-help`](./skills/poteto-help/SKILL.md).
 
-that's it. the other skills are situational; the mode skill uses them for you as needed. out of the box the mode splits work by model strength: code delegates (feature, refactoring, bug fix, perf, hillclimb) go to grok, while the hardest changes, prose, and judgment go to opus 5.5. the default panel is opus 5.5 / grok. [`/setup-pstack`](./skills/setup-pstack/SKILL.md) changes any of it.
+that's it. the other skills are situational; the mode skill uses them for you as needed. out of the box the mode splits work by model strength: code delegates (feature, refactoring, bug fix, perf, hillclimb) go to grok, while the hardest changes, prose, and judgment go to opus 5.5. the default panel is opus 5.5 / grok. [`/setup-rock-stack`](./skills/setup-rock-stack/SKILL.md) changes any of it.
 
 ## usage
 
@@ -127,7 +124,7 @@ to keep [`/rocky-mode`](./skills/rocky-mode/SKILL.md) on across turns, pick it f
 | skill | use it when |
 |---|---|
 | [`/rocky-mode`](./skills/rocky-mode/SKILL.md) | default entry point for any non-trivial task. |
-| [`/poteto-help`](./skills/poteto-help/SKILL.md) | you're new to pstack, or unsure which skill, playbook, or principle fits. finds out what you're trying to do, answers that part, and hands you a prompt to type. runs only when you type `/poteto-help`. |
+| [`/poteto-help`](./skills/poteto-help/SKILL.md) | you're new to rock-stack, or unsure which skill, playbook, or principle fits. finds out what you're trying to do, answers that part, and hands you a prompt to type. runs only when you type `/poteto-help`. |
 | [`/in-your-own-words`](./skills/in-your-own-words/SKILL.md) | you want the agent to play back your goal and the problem before it starts. runs only when you type `/in-your-own-words`. |
 | [`/sharpen`](./skills/sharpen/SKILL.md) | you want a task approached the way a top expert would, aimed at what you're really after, without overspecifying it or deciding your choices for you. |
 | [`/how`](./skills/how/SKILL.md) | you want a walkthrough of how a subsystem works. |
@@ -141,7 +138,7 @@ to keep [`/rocky-mode`](./skills/rocky-mode/SKILL.md) on across turns, pick it f
 | [`/interrogate`](./skills/interrogate/SKILL.md) | you have a diff and want different models to try to break it, including a strict code-quality lens. |
 | [`/automate-me`](./skills/automate-me/SKILL.md) | you want your own `-mode` skill, drafted from how you've actually worked. |
 | [`/make-bot-ui`](./skills/make-bot-ui/SKILL.md) | you want a page or dashboard whose buttons wake a Grok Bot over a webhook, including the sender-key handoff and Tailscale. |
-| [`/setup-pstack`](./skills/setup-pstack/SKILL.md) | you want to pick which models pstack uses per role. detects your models and writes a config rule. |
+| [`/setup-rock-stack`](./skills/setup-rock-stack/SKILL.md) | you want to pick which models rock-stack uses per role. detects your models and writes a config rule. |
 | [`/reflect`](./skills/reflect/SKILL.md) | a long task landed and you want the recipe captured as a skill edit. |
 | [`/correct`](./skills/correct/SKILL.md) | you keep correcting agents for the same mistakes. mines history for mistake classes, fixes each at the highest level that works (architecture, then types, lint, and ci, then tests, with docs last), and keeps a table pairing each rule with what enforces it. |
 | [`/teach`](./skills/teach/SKILL.md) | you want to actually understand a change or subsystem, not just have it summarized. runs how + why and weaves one plain explanation, built up diagram by diagram. |
@@ -213,11 +210,11 @@ help:              /poteto-help which skill should i use to review this branch?
 
 [`/rocky-mode`](./skills/rocky-mode/SKILL.md) runs in the chat that receives it. that chat owns the playbook, the todo list, and every subagent spawn.
 
-pstack also ships [`subagent_type: "poteto-agent"`](./agents/poteto-agent.md) as the wrapper for delegates spawned during a run. it reads `rocky-mode` in full, including its inline principles index, before doing any work. substituting `generalPurpose` skips that read and drifts. do not spawn `poteto-agent` to run the playbook itself.
+rock-stack also ships [`subagent_type: "poteto-agent"`](./agents/poteto-agent.md) as the wrapper for delegates spawned during a run. it reads `rocky-mode` in full, including its inline principles index, before doing any work. substituting `generalPurpose` skips that read and drifts. do not spawn `poteto-agent` to run the playbook itself.
 
 [`/rocky-mode`](./skills/rocky-mode/SKILL.md) and [`subagent_type: "poteto-agent"`](./agents/poteto-agent.md) route through the same wrapper.
 
-pstack also ships [Comment Sicko](./agents/comment-sicko.md), a read-only comment reviewer available as `subagent_type: "comment-sicko"`. usually invoke it through [`/no-comments`](./skills/no-comments/SKILL.md), not directly.
+rock-stack also ships [Comment Sicko](./agents/comment-sicko.md), a read-only comment reviewer available as `subagent_type: "comment-sicko"`. usually invoke it through [`/no-comments`](./skills/no-comments/SKILL.md), not directly.
 
 ## principles
 
@@ -263,27 +260,27 @@ a few things `rocky-mode` references but doesn't bundle:
 - `control-cli` (for CLIs and TUIs) and `control-ui` (for browser, Electron, web) ship in `cursor-team-kit` too.
 - `/create-skill` is a cursor built-in. cursor also ships a built-in `/babysit`; inside `rocky-mode`, the [babysit playbook](./skills/rocky-mode/playbooks/babysit.md) supersedes it for pr-status requests.
 
-install `cursor-team-kit` alongside pstack if you want the full set.
+install `cursor-team-kit` alongside rock-stack if you want the full set.
 
 ## why are there no planning skills?
 
-cursor already has a great plan mode which works great with pstack. but personally, i don't believe in planning. the best spec is code. if you do want to make a plan, [`/rocky-mode`](./skills/rocky-mode/SKILL.md) covers it, but it's not a default. 
+cursor already has a great plan mode which works great with rock-stack. but personally, i don't believe in planning. the best spec is code. if you do want to make a plan, [`/rocky-mode`](./skills/rocky-mode/SKILL.md) covers it, but it's not a default. 
 
 ## make it yours
 
 `rocky-mode` is my style. you may not want exactly that.
 
-type [`/automate-me`](./skills/automate-me/SKILL.md). it mines your recent transcripts, drafts a `<your-name>-mode` skill from how you've actually worked, and routes through pstack underneath. you keep pstack as the base and end up with your own routing skill alongside `rocky-mode`.
+type [`/automate-me`](./skills/automate-me/SKILL.md). it mines your recent transcripts, drafts a `<your-name>-mode` skill from how you've actually worked, and routes through rock-stack underneath. you keep rock-stack as the base and end up with your own routing skill alongside `rocky-mode`.
 
-models are configurable too. type [`/setup-pstack`](./skills/setup-pstack/SKILL.md). it detects the models you have access to and writes a small always-applied rule mapping each role (code, judgment, the review panels) to a model. every skill reads it and falls back to sensible defaults when the rule is absent, so you override only what you want.
+models are configurable too. type [`/setup-rock-stack`](./skills/setup-rock-stack/SKILL.md). it detects the models you have access to and writes a small always-applied rule mapping each role (code, judgment, the review panels) to a model. every skill reads it and falls back to sensible defaults when the rule is absent, so you override only what you want.
 
-when a default changes, a rule written before the change still pins the old default. delete those role lines, or delete the file, then run `/setup-pstack` again. a rerun keeps any role whose model differs from the default.
+when a default changes, a rule written before the change still pins the old default. delete those role lines, or delete the file, then run `/setup-rock-stack` again. a rerun keeps any role whose model differs from the default. the rule is now `~/.cursor/rules/rock-stack-models.mdc`. a legacy `pstack-models.mdc` from before the rename is still read when the new file is missing, and a rerun writes the new one.
 
 ## automations
 
-pstack also ships a dormant [benny automation pack](./automations/benny/). benny triages slack issue reports, then reproduces and fixes confirmed bugs with real ui evidence. its files are not registered as slash skills.
+rock-stack also ships a dormant [benny automation pack](./automations/benny/). benny triages slack issue reports, then reproduces and fixes confirmed bugs with real ui evidence. its files are not registered as slash skills.
 
-to set it up, point cursor at [`FOR_AGENTS.md`](./automations/benny/FOR_AGENTS.md). setup copies the pack into the target repository at `.cursor/automations/benny/`, enables pstack there for shared skills, and keeps user configuration outside the copied pack. benny runs on cursor automations, so it is cursor-only.
+to set it up, point cursor at [`FOR_AGENTS.md`](./automations/benny/FOR_AGENTS.md). setup copies the pack into the target repository at `.cursor/automations/benny/`, enables rock-stack there for shared skills, and keeps user configuration outside the copied pack. benny runs on cursor automations, so it is cursor-only.
 
 ## license
 

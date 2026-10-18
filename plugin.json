@@ -1,16 +1,16 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
-  "name": "pstack",
+  "name": "rock-stack",
   "version": "0.15.25",
-  "description": "if you want to go fast, go deep first. pstack helps you write less, but higher quality code. rigorous agent workflows you can parallelize with confidence.",
+  "description": "if you want to go fast, go deep first. rock-stack helps you write less, but higher quality code. rigorous agent workflows you can parallelize with confidence. a fork of pstack by Lauren Tan (https://github.com/cursor/plugins/tree/main/pstack).",
   "author": {
-    "name": "Lauren Tan"
+    "name": "Wipas Anantamongkol (Frong)"
   },
   "homepage": "https://github.com/cursor/plugins/tree/main/pstack",
   "repository": "https://github.com/cursor/plugins",
   "license": "MIT",
   "keywords": [
-    "pstack",
+    "rock-stack",
     "rocky-mode",
     "workflow",
     "principles",
