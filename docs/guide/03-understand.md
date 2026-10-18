@@ -2,7 +2,7 @@
 
 Editing code you don't understand is how subtle regressions ship, and that's as true for the agent as for you. Agents usually fail in one of two ways. They misread what you want, or they don't have the context to do the work right. [What goes in a prompt](./02-rocky-mode.md#what-goes-in-a-prompt) handles the first. This page handles the second.
 
-pstack gives you four ways in. `/how` explains what the code does now. `/why` digs up the reasons it's shaped that way. `/teach` blends both into one explanation. `/recall` rebuilds your own recent context on a topic. Each one also makes the agent explain itself in words you can check. That's how you supervise an agent that may know the code better than you do.
+pstack gives you five ways in. `/how` explains what the code does now. `/why` digs up the reasons it's shaped that way. `/teach` blends both into one explanation. `/handbook` writes what you need to know into the repo, so it outlasts the chat. `/recall` rebuilds your own recent context on a topic. Each one also makes the agent explain itself in words you can check. That's how you supervise an agent that may know the code better than you do.
 
 ![A detective studies a machine blueprint with a magnifying glass while robots fetch case files; the evidence board behind her links clues under /how and /why.](./images/understanding.jpg)
 
@@ -49,6 +49,14 @@ It works on the agent's own choices too:
 ```
 
 Teaching helps the agent as much as you. An agent that has to explain its work must read the code and back each claim with evidence, instead of stating it confidently and moving on.
+
+## Keep a project handbook with `/handbook`
+
+```text
+/handbook generate a handbook for this repo. i won't read the code, so every rule needs its test.
+```
+
+[`/handbook`](../../skills/handbook/SKILL.md) runs `/how` and `/why` and writes the results to `docs/handbook/`. It writes an overview with a diagram, business rules in plain words, flows, a troubleshooting map, and one file per fixed bug. Each rule and bug points at a real file and at the test that guards it, or says `unguarded`. A checker script fails when a citation stops resolving. Once the handbook exists, `/rocky-mode` updates it at the end of a feature, bug fix, or refactor. Bug fixes search the bug log first, so a bug that comes back is caught. Run `/handbook` again to fix drift, and use `/teach` for a walkthrough of any part.
 
 ## Rebuild your own context with `/recall`
 

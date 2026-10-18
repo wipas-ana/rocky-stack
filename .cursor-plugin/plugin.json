@@ -17,7 +17,8 @@
 		"principles",
 		"agent-style",
 		"subagents",
-		"unslop"
+		"unslop",
+		"handbook"
 	],
 	"category": "developer-tools",
 	"tags": [
