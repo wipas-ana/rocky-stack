@@ -1,0 +1,106 @@
+# TEMPLATE. Adapt it before use, per playbooks/release.md.
+# Replace ci/test.sh, ci/deploy.sh, and ci/smoke.sh with the repo's own commands.
+# Protect v* tags and make registry tags immutable, so a version always names one image.
+
+stages:
+  - build
+  - test
+  - staging
+  - production
+  - release
+
+variables:
+  ROLLBACK_VERSION:
+    value: ""
+    description: Release tag to redeploy for a rollback, such as v1.4.2. Set it only when you run the rollback pipeline.
+
+.on-release-tag:
+  rules:
+    - if: $CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+(-[0-9A-Za-z.-]+)?$/
+
+build-image:
+  extends: .on-release-tag
+  stage: build
+  image: docker:27
+  services:
+    - docker:27-dind
+  script:
+    - echo "$CI_REGISTRY_PASSWORD" | docker login --username "$CI_REGISTRY_USER" --password-stdin "$CI_REGISTRY"
+    - >-
+      docker build
+      --build-arg APP_VERSION="$CI_COMMIT_TAG"
+      --build-arg APP_COMMIT="$CI_COMMIT_SHORT_SHA"
+      --label org.opencontainers.image.version="$CI_COMMIT_TAG"
+      --label org.opencontainers.image.revision="$CI_COMMIT_SHA"
+      --tag "$CI_REGISTRY_IMAGE:$CI_COMMIT_TAG"
+      --tag "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA"
+      .
+    - docker push "$CI_REGISTRY_IMAGE:$CI_COMMIT_TAG"
+    - docker push "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA"
+    - echo "IMAGE_REF=$(docker inspect --format '{{index .RepoDigests 0}}' "$CI_REGISTRY_IMAGE:$CI_COMMIT_TAG")" > image.env
+  artifacts:
+    reports:
+      dotenv: image.env
+
+test-image:
+  extends: .on-release-tag
+  stage: test
+  image: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
+  needs:
+    - build-image
+  script:
+    - ./ci/test.sh
+
+deploy-staging:
+  extends: .on-release-tag
+  stage: staging
+  needs:
+    - build-image
+    - test-image
+  environment:
+    name: staging
+  script:
+    - ./ci/deploy.sh staging "$IMAGE_REF"
+    - ./ci/smoke.sh staging "$CI_COMMIT_TAG" "$CI_COMMIT_SHORT_SHA"
+
+deploy-production:
+  stage: production
+  rules:
+    - if: $CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+$/
+      when: manual
+  allow_failure: false
+  needs:
+    - build-image
+    - deploy-staging
+  environment:
+    name: production
+  script:
+    - ./ci/deploy.sh production "$IMAGE_REF"
+    - ./ci/smoke.sh production "$CI_COMMIT_TAG" "$CI_COMMIT_SHORT_SHA"
+
+publish-release:
+  stage: release
+  image: registry.gitlab.com/gitlab-org/release-cli:latest
+  rules:
+    - if: $CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+$/
+      when: manual
+  needs:
+    - deploy-production
+  script:
+    - echo "Publishing release $CI_COMMIT_TAG for $CI_COMMIT_SHORT_SHA"
+  release:
+    tag_name: $CI_COMMIT_TAG
+    name: $CI_COMMIT_TAG
+    description: $CI_COMMIT_TAG_MESSAGE
+
+rollback-production:
+  stage: production
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "web" && $ROLLBACK_VERSION =~ /^v\d+\.\d+\.\d+$/
+      when: manual
+  allow_failure: false
+  environment:
+    name: production
+  script:
+    - ./ci/deploy.sh production "$CI_REGISTRY_IMAGE:$ROLLBACK_VERSION"
+    - ./ci/smoke.sh production "$ROLLBACK_VERSION"

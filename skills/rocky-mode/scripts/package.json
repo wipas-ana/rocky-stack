@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "bun test orch watch-pr watch-mr forge worktree-audit.test.ts check-plan.test.ts ../../handbook/scripts",
+    "test": "bun test orch watch-pr watch-mr forge worktree-audit.test.ts check-plan.test.ts release-ci.test.ts ../../handbook/scripts",
     "typecheck": "tsc --project watch-pr/tsconfig.json --noEmit --strict"
   },
   "dependencies": {

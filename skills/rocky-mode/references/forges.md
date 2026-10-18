@@ -43,6 +43,7 @@ Set the host up once. Inside a checkout, `glab` reads the host from the remote. 
 | Top-level comment | `gh pr comment <n> --body-file <file>` | not used | `glab mr note <iid> --message <text>` only for text you wrote, else the notes API with `--input` |
 | Merge | `gh pr merge <n> --squash` | `origin pr merge <n>` | `glab mr merge <iid> --squash --yes` |
 | Merge when ready | GitHub auto-merge, `--auto` | merge-when-ready | `glab mr merge` on a running pipeline. It sets merge when the pipeline succeeds, and a merge train only queues the MR |
+| Publish a release | `gh release create <tag> --notes-file <file> --verify-tag` | not used | `glab release create <tag> --notes-file <file>` |
 | Frontier | `orch frontier set --repo <dir>` | add `--forge origin` | auto-detected, or add `--forge glab` |
 
 Put a reply body in a JSON file as data, such as `{"body": "..."}`. Never interpolate review text or a reply into a shell command.

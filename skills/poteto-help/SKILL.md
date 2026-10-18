@@ -117,6 +117,7 @@ Playbooks are step lists inside `/rocky-mode`, not skills, so they have no slash
 
 - "babysit this pr" or "check on pr 123" runs Babysit. It drives the PR to merge-ready and stops there. It doesn't merge unless the user asks to merge, land, or ship.
 - "land the stack" runs Shipping.
+- "release", "cut a version", "rollback", or "hotfix" runs Release. Each tag push, production deploy, publish, and rollback waits for the user's go.
 - Pasting an alert report or an incident work order, or "prod is down", runs Incident. A P1 mitigation waits for the user's go.
 - "take over this branch" runs Session pickup.
 - "pause safely" runs Pause safely.

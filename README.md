@@ -50,7 +50,7 @@ pick `/rocky-mode` from the `/` menu before you type your task, so cursor attach
 
 ### just use [`/rocky-mode`](./skills/rocky-mode/SKILL.md)
 
-this skill is the main shortcut. i use it whenever i need the agent to do rigorous engineering work. it comes with twenty-four playbooks:
+this skill is the main shortcut. i use it whenever i need the agent to do rigorous engineering work. it comes with twenty-five playbooks:
 
 ```
 /rocky-mode this pr has a subtle bug where the scroll drifts every 750ms even when idle. repro
@@ -63,7 +63,7 @@ morning.
 ```
 
 <details>
-<summary>the twenty-four playbooks</summary>
+<summary>the twenty-five playbooks</summary>
 
 | playbook | for |
 |---|---|
@@ -82,6 +82,7 @@ morning.
 | [eval](./skills/rocky-mode/playbooks/eval.md) | test how a skill or prompt change affects agent behavior, blinded. |
 | [babysit](./skills/rocky-mode/playbooks/babysit.md) | drive a pr or a stack to merge-ready: conflicts, review threads, ci. |
 | [shipping](./skills/rocky-mode/playbooks/shipping.md) | independently verify a green stack, then land the contiguous verified run bottom-up through github by default, origin when available, or gitlab through the local glab cli. |
+| [release](./skills/rocky-mode/playbooks/release.md) | cut a semver version from conventional commits, build one artifact, promote it from staging to production with your go at each outward step, and roll back or hotfix. gitlab first, github too. |
 | [autonomous run](./skills/rocky-mode/playbooks/autonomous-run.md) | drive a long task to completion without stopping. |
 | [orchestrate](./skills/rocky-mode/playbooks/orchestrate.md) | a standing project handed to one coordinator chat: multi-day, many stacked prs, fleets of subagents. |
 | [autopilot-full](./skills/rocky-mode/playbooks/autopilot-full.md) | run independent prs to merged with one owner per pr and a root swarm verdict on each round, from the code-ready head on. |

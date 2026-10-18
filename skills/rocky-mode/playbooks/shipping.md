@@ -9,4 +9,6 @@
 5. **Leave the stack alone while it lands.** Step 4's move of the next PR is the only change to a branch or base, because a merge lands whatever its branch and base hold at that moment, verdict or not. On GitHub, watch the run with the queued watcher from `playbooks/babysit.md` (`scripts/watch-pr/watch-pr --queued-stack --stack-prs <bottom-to-top>`) under `/loop` until it reports `COMPLETE` at the ceiling. On Origin, re-read the current PR with `origin pr view <pr> --checks` each time `origin pr checks <pr> --watch` returns, until the ceiling reads merged. On GitLab, run `scripts/watch-mr/watch-mr.ts` on the lowest unmerged MR, and run it again on the next MR after each merge, until the ceiling reads merged. A base that moves to trunk when its parent merges is expected, not damage to repair. If a merge stalls, find out why before you change anything.
 6. **Stop at the ceiling.** Extending the run takes new verdicts, so it is a new pass through step 1.
 
+Landing ends here. Cutting a version, deploying it, and rolling it back are the Release playbook (`release.md`).
+
 **Reply:** the verified run and its ceiling, each PR's verdict and who produced it, what landed and how you confirmed it, and what the next gap needs.

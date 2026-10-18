@@ -127,4 +127,14 @@ Green is not the same as safe. When you're ready to land, say so:
 
 The [Shipping playbook](../../skills/rocky-mode/playbooks/shipping.md) verifies each PR independently before it arms anything. One fresh agent per PR proves the behavior live, and the agent that judges a change is never the one that wrote it. Then Shipping lands only the contiguous verified run from the bottom, one PR at a time through GitHub by default or Origin when its CLI is available, and reports the first PR that breaks the chain. A verified PR sitting above an unverified one waits, because merging it would pull the gap in underneath.
 
+## Cut a version with Release
+
+Landing on trunk is not a release. When you want a version out:
+
+```text
+/rocky-mode cut a release. show me the version and why before you tag anything.
+```
+
+The [Release playbook](../../skills/rocky-mode/playbooks/release.md) follows the repo's existing versioning, or proposes SemVer with Conventional Commits and waits for you. It opens a release MR with the version bump and the changelog, tags the merge commit, and lets CI build one artifact that goes to staging first and then, unchanged, to production. It asks for your go before it pushes the tag, deploys to production, publishes the release, or rolls back. A rollback redeploys the previous version's artifact. A hotfix branches from the release tag and ships as a PATCH. It works on self-hosted GitLab through the local `glab` CLI, and on GitHub through `gh`.
+
 Next: [Run work while you sleep](./07-overnight.md).
