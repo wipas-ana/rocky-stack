@@ -56,7 +56,7 @@ Teaching helps the agent as much as you. An agent that has to explain its work m
 /handbook generate a handbook for this repo. i won't read the code, so every rule needs its test.
 ```
 
-[`/handbook`](../../skills/handbook/SKILL.md) runs `/how` and `/why` and writes the results to `docs/handbook/`. It writes an overview with a diagram, business rules in plain words, flows, a troubleshooting map, and one file per fixed bug. Each rule and bug points at a real file and at the test that guards it, or says `unguarded`. A checker script fails when a citation stops resolving. Once the handbook exists, `/rocky-mode` updates it at the end of a feature, bug fix, or refactor. Bug fixes search the bug log first, so a bug that comes back is caught. Run `/handbook` again to fix drift, and use `/teach` for a walkthrough of any part.
+[`/handbook`](../../skills/handbook/SKILL.md) runs `/how` and `/why` and writes the results to `docs/handbook/`. It writes an overview with a diagram, business rules in plain words, flows, a troubleshooting map, one file per fixed bug, and one postmortem per production incident. Each rule and bug points at a real file and at the test that guards it, or says `unguarded`. A checker script fails when a citation stops resolving. Once the handbook exists, `/rocky-mode` updates it at the end of a feature, bug fix, or refactor. Bug fixes search the bug log first, so a bug that comes back is caught. Run `/handbook` again to fix drift, and use `/teach` for a walkthrough of any part.
 
 ## Rebuild your own context with `/recall`
 

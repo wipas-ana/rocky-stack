@@ -80,6 +80,37 @@ test("a new entry only notes a stale index until --index rebuilds it", () => {
 	expect(run(repo).stdout).not.toContain("is stale");
 });
 
+const incident = "docs/handbook/incidents/2026-10-05-checkout-totals-wrong.md";
+
+test("an incident entry needs every field and a guard", () => {
+	const repo = copy();
+	const text = readFileSync(join(repo, incident), "utf8")
+		.replace(/\*\*Follow-ups\.\*\* .*\n/, "")
+		.replace(/\*\*Guard\.\*\* .*/, "**Guard.** see the PR");
+	writeFileSync(join(repo, incident), text);
+	writeFileSync(join(repo, "docs/handbook/incidents/outage.md"), "# Outage\n");
+	const result = run(repo);
+	expect(result.status).toBe(1);
+	expect(result.stderr).toContain("incident entry lacks **Follow-ups.**");
+	expect(result.stderr).toContain("no guard test");
+	expect(result.stderr).toContain("incident entry is not incidents/<yyyy-mm-dd>-<slug>.md");
+});
+
+test("a new incident only notes a stale index until --index rebuilds it", () => {
+	const repo = copy();
+	writeFileSync(
+		join(repo, "docs/handbook/incidents/2026-10-06-pricing-timeouts.md"),
+		"# Pricing timed out\n\n**Severity.** P1\n**What happened.** Checkout timed out.\n**Cause.** A slow loop in `src/pricing.ts#applyDiscount`.\n**Fix.** commit def5678\n**Guard.** `unguarded`\n**Follow-ups.** Add a load test.\n",
+	);
+	const stale = run(repo);
+	expect(stale.status).toBe(0);
+	expect(stale.stdout).toContain("docs/handbook/incidents/README.md is stale");
+	expect(run(repo, "--index").status).toBe(0);
+	const index = readFileSync(join(repo, "docs/handbook/incidents/README.md"), "utf8");
+	expect(index).toContain("| 2026-10-06 | Pricing timed out | P1 | `unguarded` |");
+	expect(run(repo).stdout).not.toContain("is stale");
+});
+
 test("exits 2 without a handbook", () => {
 	const repo = copy();
 	rmSync(join(repo, "docs"), { recursive: true });

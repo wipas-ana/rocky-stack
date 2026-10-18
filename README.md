@@ -29,6 +29,8 @@ claude code prefixes plugin commands and agents, so `/rocky-mode` is `/pstack:ro
 
 claude code installs a generated copy of pstack from [`harness/pstack/`](https://github.com/cursor/plugins/tree/main/harness/pstack) at the repository root. after changing `skills/`, `agents/`, `docs/harness/claude-code.md`, or `plugin.json`, run `node scripts/generate-pstack-harness-trees.mjs` from the repository root and commit the result. ci fails until you do.
 
+to run every script test, run `bun run test` in `skills/rocky-mode/scripts`, or `bun test skills` from the repository root. both cover the handbook checker.
+
 ## get started
 
 two steps:
@@ -48,7 +50,7 @@ pick `/rocky-mode` from the `/` menu before you type your task, so cursor attach
 
 ### just use [`/rocky-mode`](./skills/rocky-mode/SKILL.md)
 
-this skill is the main shortcut. i use it whenever i need the agent to do rigorous engineering work. it comes with twenty-three playbooks:
+this skill is the main shortcut. i use it whenever i need the agent to do rigorous engineering work. it comes with twenty-four playbooks:
 
 ```
 /rocky-mode this pr has a subtle bug where the scroll drifts every 750ms even when idle. repro
@@ -61,12 +63,13 @@ morning.
 ```
 
 <details>
-<summary>the twenty-three playbooks</summary>
+<summary>the twenty-four playbooks</summary>
 
 | playbook | for |
 |---|---|
 | [investigation](./skills/rocky-mode/playbooks/investigation.md) | a read-only question. how does x work, why was y built this way, are we sure. |
 | [bug fix](./skills/rocky-mode/playbooks/bug-fix.md) | reproduce a defect, root-cause it, and fix with runtime evidence. |
+| [incident](./skills/rocky-mode/playbooks/incident.md) | respond to a production alert or a pasted incident work order: mitigate a p1 with your go, find the cause with evidence, fix through bug fix, write a postmortem. logs and code stay local. |
 | [perf](./skills/rocky-mode/playbooks/perf-issue.md) | trace a measured slowness and improve it against a baseline. |
 | [hillclimb](./skills/rocky-mode/playbooks/hillclimb.md) | sustained, scientific improvement of one metric against a target, looping hypotheses with before/after measurement and one commit per accepted win. |
 | [runtime forensics](./skills/rocky-mode/playbooks/runtime-forensics.md) | diagnose a live symptom (leak, idle-cpu spin, glitch) from instrumentation. |
@@ -78,7 +81,7 @@ morning.
 | [authoring a skill](./skills/rocky-mode/playbooks/authoring-a-skill.md) | writing or editing a SKILL.md. |
 | [eval](./skills/rocky-mode/playbooks/eval.md) | test how a skill or prompt change affects agent behavior, blinded. |
 | [babysit](./skills/rocky-mode/playbooks/babysit.md) | drive a pr or a stack to merge-ready: conflicts, review threads, ci. |
-| [shipping](./skills/rocky-mode/playbooks/shipping.md) | independently verify a green stack, then land the contiguous verified run bottom-up through github by default or origin when available. |
+| [shipping](./skills/rocky-mode/playbooks/shipping.md) | independently verify a green stack, then land the contiguous verified run bottom-up through github by default, origin when available, or gitlab through the local glab cli. |
 | [autonomous run](./skills/rocky-mode/playbooks/autonomous-run.md) | drive a long task to completion without stopping. |
 | [orchestrate](./skills/rocky-mode/playbooks/orchestrate.md) | a standing project handed to one coordinator chat: multi-day, many stacked prs, fleets of subagents. |
 | [autopilot-full](./skills/rocky-mode/playbooks/autopilot-full.md) | run independent prs to merged with one owner per pr and a root swarm verdict on each round, from the code-ready head on. |

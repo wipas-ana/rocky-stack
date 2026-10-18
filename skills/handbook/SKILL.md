@@ -19,6 +19,7 @@ One Diátaxis mode per file. Never mix modes in one file. Split and link instead
 - `flows/<flow>.md` is reference. One sequence diagram per flow, the data shapes it passes, and its API and database touchpoints. Generate shapes from the authoritative schema or type where one exists.
 - `troubleshooting.md` is how-to. Each entry gives a symptom, where to look, which logs to read, and how to check. For "how to check", link the project's verification skill (`.cursor/skills/verify-<app>/`) and its Doctor section and feature files. Do not copy launch or drive steps. If the project has none, suggest `/create-verification-skill`.
 - `bugs/<yyyy-mm-dd>-<slug>.md` is one bug per file. `bugs/README.md` is the index, built by the script and never edited by hand.
+- `incidents/<yyyy-mm-dd>-<slug>.md` is one postmortem per production incident, written by the Incident playbook (`../rocky-mode/playbooks/incident.md`). `incidents/README.md` is its script-built index.
 
 ## Citations
 
@@ -26,6 +27,7 @@ Every claim cites `path#symbol`, where `path` is relative to the repo root and `
 
 - A rule bullet ends with `Code` and a `path#symbol` citation, then `Guard` and a test citation, or `unguarded`.
 - A bug entry has these lead-ins in this order: `**Symptom.**`, `**Keywords.**`, `**Root cause.**` with a citation, `**Fix.**` with the PR link or commit, and `**Guard.**` with the regression test or `unguarded`.
+- An incident entry has these lead-ins in this order: `**Severity.**`, `**What happened.**`, `**Cause.**` with a citation, `**Fix.**`, `**Guard.**`, and `**Follow-ups.**`.
 - Write `unguarded` when no test guards the claim. Never invent a test name. An unguarded rule is a finding to report, and a candidate for the **tdd** skill.
 - Keep a bug entry to about five lines. The PR body holds the rest.
 
@@ -33,14 +35,14 @@ Every claim cites `path#symbol`, where `path` is relative to the repo root and `
 - WELCOME10 takes 10% off carts of 50 or more. Code `src/pricing.ts#applyDiscount`. Guard `tests/test_pricing.py#test_welcome_discount_needs_minimum_total`.
 ```
 
-Run the checker after every edit. It fails on a cited path, symbol, or test that does not resolve, on a rule or bug entry with no guard and no `unguarded` marker, on line-number citations, and on long dashes and curly quotes.
+Run the checker after every edit. It fails on a cited path, symbol, or test that does not resolve, on a rule, bug, or incident entry with no guard and no `unguarded` marker, on line-number citations, and on long dashes and curly quotes.
 
 ```bash
 node <handbook-skill>/scripts/check-handbook.mjs --root <repo>
 node <handbook-skill>/scripts/check-handbook.mjs --root <repo> --index
 ```
 
-`<handbook-skill>` is the directory of this file. The first command checks. The second also rebuilds `bugs/README.md`. A stale index is a note, not a failure, so a worker's PR passes before the landing unit rebuilds it.
+`<handbook-skill>` is the directory of this file. The first command checks. The second also rebuilds `bugs/README.md` and `incidents/README.md`. A stale index is a note, not a failure, so a worker's PR passes before the landing unit rebuilds it.
 
 ## What the handbook never holds
 
@@ -50,7 +52,7 @@ node <handbook-skill>/scripts/check-handbook.mjs --root <repo> --index
 
 ## Parallel safety
 
-When several agents work at once (Orchestrate, Autopilot-full, Autopilot-stack), each worker only adds its own new entry files, such as a new `bugs/` file or a new `rules/<area>.md`. Workers never edit `bugs/README.md` or a file another worker may touch. The landing unit runs `--index` and makes any shared edits after the units land (the **separate-before-serializing-shared-state** principle skill).
+When several agents work at once (Orchestrate, Autopilot-full, Autopilot-stack), each worker only adds its own new entry files, such as a new `bugs/` or `incidents/` file or a new `rules/<area>.md`. Workers never edit an index or a file another worker may touch. The landing unit runs `--index` and makes any shared edits after the units land (the **separate-before-serializing-shared-state** principle skill).
 
 ## Generate mode
 
@@ -73,7 +75,7 @@ Modeled on the **maintain-verification-skill** skill. Edit only `docs/handbook/`
 
 ## Reading it during a task
 
-Read only what the task needs. In a bug fix, an explorer searches `bugs/` and `troubleshooting.md` for the symptom's keywords and returns only the matching entries. Treat the handbook as a starting point, and confirm each claim against the code.
+Read only what the task needs. In a bug fix or an incident, an explorer searches `bugs/`, `incidents/`, and `troubleshooting.md` for the symptom's keywords and returns only the matching entries. Treat the handbook as a starting point, and confirm each claim against the code.
 
 For a guided walkthrough of any part, use the **teach** skill. It reads the handbook and the code and explains them diagram by diagram.
 

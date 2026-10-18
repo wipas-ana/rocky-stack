@@ -13,6 +13,7 @@ import {
   writeFile,
 } from "node:fs/promises";
 import { basename, dirname, join, resolve } from "node:path";
+import { repoForge } from "../forge/forge.ts";
 
 const UNIT_HEADER = "id\ttrack\tstate\tbranch\tpr\tsha\tbrief";
 const LEDGER_HEADER = "pr\tsha\tverdict\tevidence\tverifier\tts";
@@ -169,7 +170,7 @@ export interface ResolveGateParams {
 
 export interface SetFrontierParams {
   readonly repo: string;
-  readonly forge?: Forge;
+  readonly forge?: ForgeChoice;
   readonly prs?: readonly number[];
 }
 
@@ -970,19 +971,56 @@ function countLine(value: Counts): string {
     : entries.map(([name, count]) => `${name}=${count}`).join(", ");
 }
 
-export type Forge = "gh" | "origin";
+export type Forge = "gh" | "origin" | "glab";
+export type ForgeChoice = Forge | "auto";
+
+type PullRequestFilter = "--head" | "--base";
 
 interface ForgePullRequestQuery {
+  readonly numberField: string;
   readonly stateField: string;
   readonly headField: string;
   readonly baseField: string;
   readonly states: ReadonlyMap<string, FrontierPrState>;
+  readonly createCommand: string;
+  readonly label: (filter: PullRequestFilter, branch: string) => string;
+  readonly args: (
+    filter: PullRequestFilter,
+    branch: string,
+    fields: readonly string[]
+  ) => readonly string[];
 }
+
+function cliPullRequestQuery(
+  forge: "gh" | "origin"
+): Pick<ForgePullRequestQuery, "createCommand" | "label" | "args"> {
+  return {
+    createCommand: `${forge} pr create`,
+    label: (filter, branch) => `${forge} pr list ${filter} ${branch}`,
+    args: (filter, branch, fields) => [
+      "pr",
+      "list",
+      filter,
+      branch,
+      "--state",
+      "all",
+      "--json",
+      fields.join(","),
+    ],
+  };
+}
+
+const GLAB_BRANCH_PARAMS: Readonly<Record<PullRequestFilter, string>> = {
+  "--head": "source_branch",
+  "--base": "target_branch",
+};
 
 const FORGE_PULL_REQUEST_QUERIES: Readonly<
   Record<Forge, ForgePullRequestQuery>
 > = {
   gh: {
+    ...cliPullRequestQuery("gh"),
+    numberField: "number",
     stateField: "state",
     headField: "headRefName",
     baseField: "baseRefName",
@@ -993,6 +1031,8 @@ const FORGE_PULL_REQUEST_QUERIES: Readonly<
     ]),
   },
   origin: {
+    ...cliPullRequestQuery("origin"),
+    numberField: "number",
     stateField: "status",
     headField: "headRef",
     baseField: "baseRef",
@@ -1003,13 +1043,43 @@ const FORGE_PULL_REQUEST_QUERIES: Readonly<
       ["closed", "CLOSED"],
     ]),
   },
+  glab: {
+    numberField: "iid",
+    stateField: "state",
+    headField: "source_branch",
+    baseField: "target_branch",
+    states: new Map<string, FrontierPrState>([
+      ["opened", "OPEN"],
+      ["locked", "OPEN"],
+      ["merged", "MERGED"],
+      ["closed", "CLOSED"],
+    ]),
+    createCommand: "glab mr create",
+    label: (filter, branch) =>
+      `glab api merge_requests ${GLAB_BRANCH_PARAMS[filter]}=${branch}`,
+    // Merge requests come from the GitLab REST API through the local glab
+    // CLI, which resolves :id and the self-hosted host from the checkout.
+    args: (filter, branch) => [
+      "api",
+      `projects/:id/merge_requests?${GLAB_BRANCH_PARAMS[filter]}=${encodeURIComponent(branch)}&state=all&per_page=100`,
+    ],
+  },
 };
 
-export function parseForge(value: string): Forge {
-  if (value === "gh" || value === "origin") {
+export function parseForge(value: string): ForgeChoice {
+  if (
+    value === "auto" ||
+    value === "gh" ||
+    value === "origin" ||
+    value === "glab"
+  ) {
     return value;
   }
-  throw new UserError("forge must be gh or origin");
+  throw new UserError("forge must be auto, gh, origin, or glab");
+}
+
+export function resolveForge(choice: ForgeChoice, repo: string): Forge {
+  return choice === "auto" ? repoForge(repo) : choice;
 }
 
 interface ForgePullRequest {
@@ -1048,29 +1118,23 @@ function listPullRequests({
   forge,
   repo,
 }: {
-  filter: "--head" | "--base";
+  filter: PullRequestFilter;
   branch: string;
   forge: Forge;
   repo: string;
 }): readonly ForgePullRequest[] {
   const query = FORGE_PULL_REQUEST_QUERIES[forge];
-  const command = `${forge} pr list ${filter} ${branch}`;
+  const command = query.label(filter, branch);
   // Every state is fetched because a merged or closed PR still anchors the
   // chain, and a draft counts as OPEN.
   const raw = runTool({
     command: forge,
-    args: [
-      "pr",
-      "list",
-      filter,
-      branch,
-      "--state",
-      "all",
-      "--json",
-      ["number", query.stateField, query.headField, query.baseField].join(
-        ","
-      ),
-    ],
+    args: query.args(filter, branch, [
+      query.numberField,
+      query.stateField,
+      query.headField,
+      query.baseField,
+    ]),
     repo,
   });
   let value: unknown;
@@ -1088,11 +1152,12 @@ function listPullRequests({
       typeof status === "string" ? (query.states.get(status) ?? null) : null;
     const head = isRecord(row) ? row[query.headField] : undefined;
     const base = isRecord(row) ? row[query.baseField] : undefined;
+    const number = isRecord(row) ? row[query.numberField] : undefined;
     if (
       !isRecord(row) ||
-      typeof row.number !== "number" ||
-      !Number.isSafeInteger(row.number) ||
-      row.number < 1 ||
+      typeof number !== "number" ||
+      !Number.isSafeInteger(number) ||
+      number < 1 ||
       state === null ||
       typeof head !== "string" ||
       head.length === 0 ||
@@ -1101,7 +1166,7 @@ function listPullRequests({
     ) {
       throw new UserError(`${command} output has an invalid PR row`);
     }
-    return { pr: row.number, state, branch: head, base };
+    return { pr: number, state, branch: head, base };
   });
 }
 
@@ -1118,7 +1183,7 @@ function branchPullRequest({
   const row = rows[0];
   if (row === undefined) {
     throw new UserError(
-      `branch ${branch} has no pull request; open one with ${forge} pr create, or resolve the frontier from a branch whose chain is fully submitted`
+      `branch ${branch} has no pull request; open one with ${FORGE_PULL_REQUEST_QUERIES[forge].createCommand}, or resolve the frontier from a branch whose chain is fully submitted`
     );
   }
   if (rows.length > 1) {
@@ -1555,7 +1620,7 @@ export function openStore(
       set: async (params) => {
         await beginWrite();
         const repo = resolve(requiredLine(params.repo, "repo directory"));
-        const forge = parseForge(params.forge ?? "gh");
+        const forge = resolveForge(parseForge(params.forge ?? "auto"), repo);
         const pin =
           params.prs === undefined
             ? undefined

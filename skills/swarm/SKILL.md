@@ -24,7 +24,7 @@ Open a todolist with one entry per phase before launching anything.
 
 ## Phase B: Fan out
 
-Spawn all N workers in one message with `subagent_type: generalPurpose`, `environment: "cloud"`, `run_in_background: true`, and the step 4 model, left unset for `auto` or `inherit-parent`. Use `environment: "local"` only when the worker needs access to something on the user's computer.
+Spawn all N workers in one message with `subagent_type: generalPurpose`, `environment: "cloud"`, `run_in_background: true`, and the step 4 model, left unset for `auto` or `inherit-parent`. Use `environment: "local"` only when the worker needs access to something on the user's computer. On a GitLab repo, every worker is `environment: "local"` and gets no `cloud_base_branch`, because company code stays on the company network (`../rocky-mode/references/forges.md`).
 
 When a worker must start from a non-default pushed branch, pass `cloud_base_branch`.
 

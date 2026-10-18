@@ -98,7 +98,7 @@ Specific gaps: "We searched the issue tracker for [query1], [query2], [query3] a
 
 What was actually searched, so the user can judge coverage and redirect:
 
-- **Source control history**: {file paths}, {number of commits reviewed}, PRs #{numbers}, and code comments searched. Or "Not searched. This should not happen because git and `gh` are always expected."
+- **Source control history**: {file paths}, {number of commits reviewed}, PRs #{numbers}, and code comments searched. Or "Not searched. This should not happen because git and `gh` or `glab` are always expected."
 - **Issue / ticket tracker**: {ticket IDs and keyword searches}. Or "Not searched. No matching MCP available in this environment."
 - **Long-form documents**: {page titles and search queries}. Or "Not searched. No matching MCP available in this environment."
 - **Real-time team chat**: {channels searched, date ranges, queries}. Or "Not searched. No matching MCP available in this environment."

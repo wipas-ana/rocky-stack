@@ -118,7 +118,8 @@ const FORGE_FIXTURES: Readonly<
   Record<
     Forge,
     {
-      readonly fields: string;
+      readonly list: (filter: "--head" | "--base", branch: string) => string;
+      readonly label: (filter: "--head" | "--base", branch: string) => string;
       readonly row: (pr: {
         number: number;
         state: FixtureState;
@@ -129,7 +130,9 @@ const FORGE_FIXTURES: Readonly<
   >
 > = {
   gh: {
-    fields: "number,state,headRefName,baseRefName",
+    list: (filter, branch) =>
+      `pr list ${filter} ${branch} --state all --json number,state,headRefName,baseRefName`,
+    label: (filter, branch) => `gh pr list ${filter} ${branch}`,
     row: ({ number, state, head, base }) => ({
       number,
       state: state === "draft" ? "OPEN" : state.toUpperCase(),
@@ -138,12 +141,28 @@ const FORGE_FIXTURES: Readonly<
     }),
   },
   origin: {
-    fields: "number,status,headRef,baseRef",
+    list: (filter, branch) =>
+      `pr list ${filter} ${branch} --state all --json number,status,headRef,baseRef`,
+    label: (filter, branch) => `origin pr list ${filter} ${branch}`,
     row: ({ number, state, head, base }) => ({
       number,
       status: state,
       headRef: head,
       baseRef: base,
+    }),
+  },
+  glab: {
+    list: (filter, branch) =>
+      `api projects/:id/merge_requests?${filter === "--head" ? "source_branch" : "target_branch"}=${encodeURIComponent(branch)}&state=all&per_page=100`,
+    label: (filter, branch) =>
+      `glab api merge_requests ${filter === "--head" ? "source_branch" : "target_branch"}=${branch}`,
+    row: ({ number, state, head, base }) => ({
+      iid: number,
+      id: number + 9000,
+      state: state === "open" || state === "draft" ? "opened" : state,
+      draft: state === "draft",
+      source_branch: head,
+      target_branch: base,
     }),
   },
 };
@@ -188,9 +207,7 @@ async function withFakeForge<T>({
       ])
     }\n`
   );
-  const { fields } = FORGE_FIXTURES[forge];
-  const list = (filter: string, branch: string): string =>
-    `pr list ${filter} ${branch} --state all --json ${fields}`;
+  const { list } = FORGE_FIXTURES[forge];
   const fake = join(bin, forge);
   await writeFile(
     fake,
@@ -500,7 +517,7 @@ describe("Store", () => {
     ]);
   });
 
-  for (const forge of ["gh", "origin"] as const) {
+  for (const forge of ["gh", "origin", "glab"] as const) {
     it(`resolves the ordered frontier from the ${forge} base chain and validates an optional pin`, async () => {
       const { directory, store } = await initializedStore();
       const stack = await makeGitStack(directory);
@@ -593,12 +610,43 @@ describe("Store", () => {
           await expect(
             store.frontier.set({ repo: stack.repo, forge })
           ).rejects.toThrow(
-            `${forge} pr list --head stack/open output is not valid JSON`
+            `${FORGE_FIXTURES[forge].label("--head", "stack/open")} output is not valid JSON`
           );
         },
       });
     });
   }
+
+  it("detects glab from a GitLab origin remote and names glab mr create", async () => {
+    const { directory, store } = await initializedStore();
+    const stack = await makeGitStack(directory);
+    git({
+      repo: stack.repo,
+      args: ["remote", "add", "origin", "git@gitlab.example.corp:team/app.git"],
+    });
+
+    await withFakeForge({
+      directory,
+      forge: "glab",
+      operation: async () => {
+        expect(
+          (await store.frontier.set({ repo: stack.repo })).prs.map(
+            (row) => row.pr
+          )
+        ).toEqual([10, 13, 11, 14]);
+      },
+    });
+    await withFakeForge({
+      directory,
+      forge: "glab",
+      currentRows: "[]",
+      operation: async () => {
+        await expect(store.frontier.set({ repo: stack.repo })).rejects.toThrow(
+          "branch stack/open has no pull request; open one with glab mr create"
+        );
+      },
+    });
+  });
 
   it("names the missing pull request when a chain branch has none", async () => {
     const { directory, store } = await initializedStore();
@@ -688,7 +736,7 @@ describe("orch CLI", () => {
       "gt",
     ]);
     expect(badForge.code).toBe(1);
-    expect(badForge.stderr).toContain("Allowed choices are gh, origin");
+    expect(badForge.stderr).toContain("Allowed choices are auto, gh, origin, glab");
   });
 
   it("accepts ORCH_STORE and emits complete JSON", async () => {

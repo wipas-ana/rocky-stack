@@ -48,13 +48,23 @@ esac
 git rev-parse --verify --quiet "$base^{commit}" >/dev/null 2>&1 || { echo "error: base ref not found: $base" >&2; exit 1; }
 
 # PR state by branch, fetched once as [{number, state, head}] with a lowercase
-# state. Origin when its CLI can read this repo's PRs, otherwise gh. Empty when
-# neither can.
+# state. Origin when its CLI can read this repo's PRs. Otherwise the origin
+# remote picks the forge per references/forges.md: github.com or no host means
+# gh, any other host means glab, which reads the self-hosted GitLab API
+# locally. Empty when none can.
+remote_url=$(git remote get-url origin 2>/dev/null || echo "")
+remote_host=$(printf '%s' "$remote_url" | sed -E 's#^[a-zA-Z][a-zA-Z0-9+.-]*://([^@/]*@)?##; s#^[^@/:]+@##; s#[:/].*$##' | tr 'A-Z' 'a-z')
+case "$remote_url" in /*|file://*|"") remote_host="" ;; esac
+case "$remote_host" in ""|localhost|github.com|*.github.com) forge=gh ;; *) forge=glab ;; esac
 prs=$(mktemp)
 if command -v origin >/dev/null 2>&1 \
 	&& raw=$(origin pr list --author "@me" --state all --limit 1000 \
 		--json number,status,headRef 2>/dev/null); then
 	printf '%s' "$raw" | jq '[.[] | {number, state: .status, head: .headRef}]' > "$prs" 2>/dev/null
+elif [ "$forge" = glab ]; then
+	if raw=$(glab api --paginate "projects/:id/merge_requests?scope=created_by_me&state=all&per_page=100" 2>/dev/null); then
+		printf '%s' "$raw" | jq -s '[add // [] | .[] | {number: .iid, state: (if .draft and .state == "opened" then "draft" elif .state == "opened" then "open" else .state end), head: .source_branch}]' > "$prs" 2>/dev/null
+	fi
 elif raw=$(gh pr list --author "@me" --state all --limit 1000 \
 	--json number,state,headRefName 2>/dev/null); then
 	printf '%s' "$raw" | jq '[.[] | {number, state: (.state | ascii_downcase), head: .headRefName}]' > "$prs" 2>/dev/null

@@ -7,7 +7,7 @@ import {
   openStore,
   parseVerdict,
   type Counts,
-  type Forge,
+  type ForgeChoice,
   type Frontier,
   type InboxPointer,
   type OpenGate,
@@ -82,7 +82,7 @@ interface GateResolveOptions {
 
 interface FrontierSetOptions {
   readonly repo?: string;
-  readonly forge: Forge;
+  readonly forge: ForgeChoice;
   readonly prs?: readonly number[];
 }
 
@@ -488,9 +488,12 @@ function createProgram(io: Io): Command {
       ).env("ORCH_REPO")
     )
     .addOption(
-      new Option("--forge <forge>", "pull request forge")
-        .choices(["gh", "origin"])
-        .default("gh")
+      new Option(
+        "--forge <forge>",
+        "pull request forge (auto reads git remote get-url origin)"
+      )
+        .choices(["auto", "gh", "origin", "glab"])
+        .default("auto")
     )
     .option(
       "--prs <n,...>",

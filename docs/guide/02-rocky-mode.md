@@ -1,6 +1,6 @@
 # Route work through `/rocky-mode`
 
-`/rocky-mode` is the front door. You give it a goal, it matches one of twenty-three playbooks, copies that playbook's steps into the todo list, and calls the other skills as the steps need them. In this page you learn what a good prompt looks like, and how little of one you actually need.
+`/rocky-mode` is the front door. You give it a goal, it matches one of twenty-four playbooks, copies that playbook's steps into the todo list, and calls the other skills as the steps need them. In this page you learn what a good prompt looks like, and how little of one you actually need.
 
 ![A dispatcher pulls a switch lever to route robots on rail handcars toward lit gates, under a /rocky-mode departure board listing BUG FIX, FEATURE, and INVESTIGATION.](./images/router.jpg)
 
@@ -25,7 +25,7 @@ flowchart TD
     J --> K
 ```
 
-The diagram shows the common routes. There are also playbooks for hillclimbing a metric, diagnosing runtime symptoms and captured traces, prototypes, visual parity, authoring and evaluating skills, autonomous runs, babysitting a PR or stack to merge-ready, shipping a verified stack, running a PR queue on autopilot, orchestrating project-scale programs, session pickup, pausing safely, multi-phase plans, and worktree cleanup. The [playbook directory](../../skills/rocky-mode/playbooks/) has the full set.
+The diagram shows the common routes. There are also playbooks for responding to a production incident, hillclimbing a metric, diagnosing runtime symptoms and captured traces, prototypes, visual parity, authoring and evaluating skills, autonomous runs, babysitting a PR or stack to merge-ready, shipping a verified stack, running a PR queue on autopilot, orchestrating project-scale programs, session pickup, pausing safely, multi-phase plans, and worktree cleanup. The [playbook directory](../../skills/rocky-mode/playbooks/) has the full set.
 
 ## Say the goal, not the ceremony
 
@@ -96,7 +96,7 @@ A long chat accumulates context from the last task. When you change subjects, sa
 
 ## Give parallel work its own machine
 
-If you run several agents against one repository on one computer, they will fight over the working tree, the ports, and the build output. The cleanest isolation is a [cloud subagent](https://cursor.com/docs/subagents#cloud-subagents). Each one gets its own VM and branch, so it can install dependencies, run your app, and record video of the result without touching your machine. Type `/in-cloud` before the task, or ask the parent chat to hand work to cloud subagents.
+If you run several agents against one repository on one computer, they will fight over the working tree, the ports, and the build output. The cleanest isolation is a [cloud subagent](https://cursor.com/docs/subagents#cloud-subagents). Each one gets its own VM and branch, so it can install dependencies, run your app, and record video of the result without touching your machine. Type `/in-cloud` before the task, or ask the parent chat to hand work to cloud subagents. On a self-hosted GitLab repo, company code must stay on the company network, so skip cloud subagents and use the worktrees below. The [forges reference](../../skills/rocky-mode/references/forges.md) has the GitLab rules.
 
 When the work has to stay local, ask for a worktree up front:
 
